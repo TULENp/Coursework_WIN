@@ -131,7 +131,6 @@ namespace Coursework_WIN
             this.ProdPriceTB.Size = new System.Drawing.Size(110, 35);
             this.ProdPriceTB.TabIndex = 10;
             this.ProdPriceTB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.ProdPriceTB.TextChanged += new System.EventHandler(this.ProdPriceTB_TextChanged);
             this.ProdPriceTB.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ProdPriceTB_KeyPress);
             // 
             // DelProdB
@@ -420,7 +419,6 @@ namespace Coursework_WIN
             this.ofd.DefaultExt = "txt";
             this.ofd.FileName = "openFileDialog1";
             this.ofd.Filter = "\"Text files(*.txt)|*.txt\"";
-            this.ofd.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
             // 
             // sfd
             // 

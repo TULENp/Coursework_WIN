@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Coursework_Console;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Coursework_WIN
 {
@@ -15,11 +16,6 @@ namespace Coursework_WIN
         public MainForm()
         {
             InitializeComponent();
-        }
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-
-
         }
         private void DepRefresh()
         {
@@ -63,6 +59,7 @@ namespace Coursework_WIN
             {
                 DepRefresh();
                 ProdTable.Rows.Clear();
+                this.dep = null;
             }
         }
 
@@ -87,80 +84,34 @@ namespace Coursework_WIN
             }
             else if (this.dep != null)
             {
+                if (this.prod != null)
+                {
+                    if (dep.AddByIndex(dep.Search(prod), ProdTB.Text, Convert.ToDouble(ProdPriceTB.Text)))
+                    {
+                        ProdRefresh(dep);
+                        this.prod = null;
+                    }
+                    else ProdMessageL.Text = "Department is full";
+                }
+                else
                 if (dep.Add(ProdTB.Text, Convert.ToDouble(ProdPriceTB.Text)))
                 {
                     ProdRefresh(dep);
-                    ProdMessageL.Text = "";
-                    ProdTB.Text = "";
-                    ProdPriceTB.Text = "";
                 }
                 else ProdMessageL.Text = "Department is full";
+                ProdTB.Text = "";
+                ProdPriceTB.Text = "";
             }
             else ProdMessageL.Text = "Select department";
         }
-        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
-        {
-
-        }
-
-        private void LoadB_Click(object sender, EventArgs e)
-        {
-            //if (ofd.ShowDialog() == DialogResult.OK)
-            //{
-            //    using (StreamReader streamReader = new StreamReader(ofd.FileName))
-            //    {
-            //        for (int i = 0; i < DepTable.ColumnCount; i++)
-            //            for (int j = 0; j < DepTable.RowCount; j++)
-            //    }
-            //}
-        }
-
-        private void SaveB_Click(object sender, EventArgs e) // add save for all tablets 
-        {
-            if (sfd.ShowDialog() == DialogResult.OK)
-            {
-                using (StreamWriter streamWriter = new StreamWriter(sfd.FileName))
-                {
-                    for (int j = 0; j < DepTable.RowCount; j++)
-                        for (int i = 0; i < DepTable.ColumnCount; i++)
-                        {
-                            streamWriter.WriteLine(DepTable[j, i].Value);
-                            //int index = DepTable.NewRowIndex;// ? getting index 
-
-                        }
-                }
-            }
-
-        }
-
-        private void ProdPriceTB_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ProdPriceTB_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (!(e.KeyChar >= '0' && e.KeyChar <= '9' || e.KeyChar == '\b' || e.KeyChar == ','))
-            {
-                e.Handled = true;
-            }
-        }
-
-        private void DepTable_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            string row = DepTable.CurrentRow.Cells[1].Value.ToString();
-            dep = sup.Search(row);
-
-            ProdRefresh(dep);
-        }
-
         private void DelProdB_Click(object sender, EventArgs e)
         {
             if (sup.Quantity != 0)
             {
                 DelProd(dep);
+                this.prod = null;
             }
-            
+
         }
         private void DelProd(Department dep)
         {
@@ -170,7 +121,57 @@ namespace Coursework_WIN
                 DepRefresh();
             }
         }
+        private void LoadB_Click(object sender, EventArgs e)
+        {
+            //if (ofd.ShowDialog() == DialogResult.OK)
+            //{
+            //    using (StreamReader streamReader = new StreamReader(ofd.FileName))
+            //    {
+            //        //string sfile = streamReader.ReadToEnd();
+            //        while (!streamReader.EndOfStream)
+            //        {
+            //            string line = streamReader.ReadLine();
+            //            for (int i = 0; i < Convert.ToInt32(line); i++)
+            //            {
+            //                string name = streamReader.ReadLine();
 
+            //            }
+
+            //        }
+            //    }
+            //}
+        }
+
+        private void SaveB_Click(object sender, EventArgs e)
+        {
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                using (StreamWriter streamWriter = new StreamWriter(sfd.FileName))
+                {
+                    Department temp = sup.First;
+                    while (temp != null)
+                    {
+                        streamWriter.WriteLine(temp.Name);
+                        for (int i = 0; i < temp.Quantity; i++)
+                        {
+                            streamWriter.WriteLine(temp.Arr[i].Name + "   " + temp.Arr[i].Price);
+                        }
+                        temp = temp.Next;
+                    }
+                }
+            }
+
+        }
+        private void DepTable_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            string row = DepTable.CurrentRow.Cells[1].Value.ToString();
+            dep = sup.Search(row);
+
+            ProdRefresh(dep);
+            ProdMessageL.Text = "";
+            ProdTB.Text = "";
+            ProdPriceTB.Text = "";
+        }
         private void ProdTable_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             SelectProd(dep);
@@ -178,6 +179,13 @@ namespace Coursework_WIN
         private void SelectProd(Department dep)
         {
             prod = ProdTable.CurrentRow.Cells[1].Value.ToString();
+        }
+        private void ProdPriceTB_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(e.KeyChar >= '0' && e.KeyChar <= '9' || e.KeyChar == '\b' || e.KeyChar == ','))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

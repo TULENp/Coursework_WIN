@@ -46,14 +46,14 @@
         {
             if (Quantity < ArrSize && Quantity != 0)
             {
-                if (index - 1 < Quantity)
+                if (index < Quantity)
                 {
                     Product prod = new Product(name, price);
 
-                    for (int i = Quantity; i > index - 1; i--)//shift 
+                    for (int i = Quantity; i > index; i--)//shift 
                         Arr[i] = Arr[i - 1];
 
-                    Arr[index - 1] = prod;
+                    Arr[index] = prod;
                     Quantity++;
                     return true;
                 }
