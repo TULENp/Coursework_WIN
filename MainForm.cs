@@ -1,9 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Windows.Forms;
 using Coursework_Console;
 using System.IO;
-using System.Collections.Generic;
 
 namespace Coursework_WIN
 {
@@ -36,7 +34,6 @@ namespace Coursework_WIN
                 ProdTable.Rows.Add(i + 1, dep.Arr[i].Name, dep.Arr[i].Price);
             }
         }
-
         private void AddDepB_Click(object sender, EventArgs e)
         {
             if (DepTB.Text == "")
@@ -52,7 +49,6 @@ namespace Coursework_WIN
             DepTB.Text = "";
             ProdMessageL.Text = "";
         }
-
         private void DelDepB_Click(object sender, EventArgs e)
         {
             if (sup.DelDepartment())
@@ -62,7 +58,6 @@ namespace Coursework_WIN
                 this.dep = null;
             }
         }
-
         private void AddProdB_Click(object sender, EventArgs e)
         {
             if (sup.Quantity != 0)
@@ -71,8 +66,6 @@ namespace Coursework_WIN
                 DepRefresh();
             }
             else ProdMessageL.Text = "Add at least one department ";
-
-
         }
         private void AddProd(Department dep)
         {
@@ -111,7 +104,6 @@ namespace Coursework_WIN
                 DelProd(dep);
                 this.prod = null;
             }
-
         }
         private void DelProd(Department dep)
         {
@@ -123,58 +115,65 @@ namespace Coursework_WIN
         }
         private void LoadB_Click(object sender, EventArgs e)
         {
-            //if (ofd.ShowDialog() == DialogResult.OK)
-            //{
-            //    using (StreamReader streamReader = new StreamReader(ofd.FileName))
-            //    {
-            //        //string sfile = streamReader.ReadToEnd();
-            //        while (!streamReader.EndOfStream)
-            //        {
-            //            string line = streamReader.ReadLine();
-            //            for (int i = 0; i < Convert.ToInt32(line); i++)
-            //            {
-            //                string name = streamReader.ReadLine();
-
-            //            }
-
-            //        }
-            //    }
-            //}
+            sup = null;
+            sup = new Supermarket("Supermarket");
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                using (StreamReader sr = new StreamReader(ofd.FileName))
+                {
+                    int depquant = Convert.ToInt32(sr.ReadLine());
+                    for (int i = 0; i < depquant; i++)
+                    {
+                        int prodquant = Convert.ToInt32(sr.ReadLine());
+                        string depName = sr.ReadLine();
+                        sup.AddDepartment(depName);
+                        Department dep = sup.Search(depName);
+                        for (int j = 0; j < prodquant; j++)
+                        {
+                            dep.Add(sr.ReadLine(), Convert.ToInt32(sr.ReadLine()));
+                        }
+                    }
+                }
+                DepRefresh();
+            }
         }
-
         private void SaveB_Click(object sender, EventArgs e)
         {
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                using (StreamWriter streamWriter = new StreamWriter(sfd.FileName))
+                using (StreamWriter sw = new StreamWriter(sfd.FileName))
                 {
                     Department temp = sup.First;
+                    sw.WriteLine(sup.Quantity);
                     while (temp != null)
                     {
-                        streamWriter.WriteLine(temp.Name);
+                        sw.WriteLine(temp.Quantity + "\n" + temp.Name);
                         for (int i = 0; i < temp.Quantity; i++)
                         {
-                            streamWriter.WriteLine(temp.Arr[i].Name + "   " + temp.Arr[i].Price);
+                            sw.WriteLine(temp.Arr[i].Name + "\n" + temp.Arr[i].Price);
                         }
                         temp = temp.Next;
                     }
                 }
             }
-
         }
         private void DepTable_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            string row = DepTable.CurrentRow.Cells[1].Value.ToString();
-            dep = sup.Search(row);
+            if (sup.Quantity != 0)
+            {
+                string row = DepTable.CurrentRow.Cells[1].Value.ToString();
+                dep = sup.Search(row);
 
-            ProdRefresh(dep);
-            ProdMessageL.Text = "";
-            ProdTB.Text = "";
-            ProdPriceTB.Text = "";
+                ProdRefresh(dep);
+                ProdMessageL.Text = "";
+                ProdTB.Text = "";
+                ProdPriceTB.Text = "";
+            }
         }
         private void ProdTable_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            SelectProd(dep);
+            if (sup.Quantity != 0)
+                SelectProd(dep);
         }
         private void SelectProd(Department dep)
         {
